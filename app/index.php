@@ -2,18 +2,20 @@
 error_reporting(-1);
 ini_set('display_errors', 1);
 
-use Psr\Http\Message\ResponseInterface as Response;
+// use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 use Slim\Routing\RouteCollectorProxy;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use Slim\Psr7\Response;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-require_once './controllers/UsuarioController.php';
-
+require_once './MiLibreria.php';
 require_once './middlewares/Verificadora.php';
+require_once './controllers/UsuarioController.php';
 require_once './controllers/HortalizaController.php';
 
 // Load ENV
@@ -42,21 +44,43 @@ $capsule->addConnection([
     'collation' => 'utf8_unicode_ci',
     'prefix'    => '',
 ]);
-// $capsule->addConnection([
-//     'driver'    => 'mysql',
-
-//     'host'      => 'localhost',
-//     'database'  => 'simulacro',
-//     'username'  => 'root',
-//     'password'  => '',
-    
-//     'charset'   => 'utf8',
-//     'collation' => 'utf8_unicode_ci',
-//     'prefix'    => '',
-// ]);
 
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
+
+$mw = function (Request $request, RequestHandler $handler) {
+
+    $handledRequest = $handler->handle($request);
+
+    $cuerpo = $handledRequest->getBody();
+
+    $vector = json_decode($cuerpo, true);
+    
+    $texto = ListarVector($vector["listaUsuario"]);
+    
+    $response = new Response();
+
+    $response->getBody()->write($texto);
+
+    return $response;
+};
+
+$mwFotos = function (Request $request, RequestHandler $handler) {
+
+    $handledRequest = $handler->handle($request);
+
+    $cuerpo = $handledRequest->getBody();
+
+    $vector = json_decode($cuerpo, true);
+    
+    $texto = ListarVectorConFoto($vector);
+    
+    $response = new Response();
+
+    $response->getBody()->write($texto);
+
+    return $response;
+};
 
 // Routes
 $app->get('[/]', function (Request $request, Response $response) {    
@@ -74,7 +98,7 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
     $group->post('[/]', \UsuarioController::class . ':CargarUno');
     $group->put('/{id}', \UsuarioController::class . ':ModificarUno');
     $group->delete('/{id}', \UsuarioController::class . ':BorrarUno');
-});
+})->add($mw);
 
 $app->group('/hortalizas', function (RouteCollectorProxy $group) {
     $group->get('[/]', \HortalizaController::class . ':TraerTodos');
@@ -85,7 +109,7 @@ $app->group('/hortalizas', function (RouteCollectorProxy $group) {
     $group->post('[/]', \HortalizaController::class . ':CargarUno');
     $group->put('/{id}', \HortalizaController::class . ':ModificarUno');
     $group->delete('/{id}', \HortalizaController::class . ':BorrarUno');
-});
+})->add($mwFotos);
 
 
 $app->run();
