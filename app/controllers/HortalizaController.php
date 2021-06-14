@@ -58,13 +58,13 @@ class HortalizaController implements IApiUsable
 
   public function TraerTodos($request, $response, $args)
   {
-    $lista = Usuario::all();
-    $payload = json_encode(array("listaUsuario" => $lista));
-    // $payload = json_encode($lista);
+    $lista = Hortaliza::all();
+
+    $payload = json_encode($lista);
 
     $response->getBody()->write($payload);
-    return $response
-      ->withHeader('Content-Type', 'application/json');
+
+    return $response->withHeader('Content-Type', 'application/json');
   }
 
   public function ModificarUno($request, $response, $args)
