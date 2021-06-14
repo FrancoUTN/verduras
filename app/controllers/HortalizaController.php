@@ -67,6 +67,20 @@ class HortalizaController implements IApiUsable
     return $response->withHeader('Content-Type', 'application/json');
   }
 
+  public function TraerTipo($request, $response, $args)
+  {
+    $tipo = $args["tipo"];
+
+    $lista = Hortaliza::where('tipo', '=', $tipo)->get();
+
+    $payload = json_encode($lista);
+
+    $response->getBody()->write($payload);
+    // $response->getBody()->write($tipo);
+
+    return $response->withHeader('Content-Type', 'application/json');
+  }
+
   public function ModificarUno($request, $response, $args)
   {
     $parametros = $request->getParsedBody();
