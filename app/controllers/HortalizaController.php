@@ -109,16 +109,18 @@ class HortalizaController implements IApiUsable
 
   public function BorrarUno($request, $response, $args)
   {
-    $usuarioId = $args['id'];
-    // Buscamos el usuario
-    $usuario = Usuario::find($usuarioId);
-    // Borramos
-    $usuario->delete();
+    $id = $args['id'];
 
-    $payload = json_encode(array("mensaje" => "Usuario borrado con exito"));
+    // Buscamos
+    $hortaliza = Hortaliza::find($id);
+
+    // Borramos
+    $hortaliza->delete();
+
+    $payload = json_encode(array("mensaje" => "Hortaliza borrada con exito"));
 
     $response->getBody()->write($payload);
-    return $response
-      ->withHeader('Content-Type', 'application/json');
+
+    return $response->withHeader('Content-Type', 'application/json');
   }
 }
