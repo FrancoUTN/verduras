@@ -1,26 +1,37 @@
 <?php
-require_once './models/Usuario.php';
+require_once './models/Hortaliza.php';
 require_once './interfaces/IApiUsable.php';
 
-use \App\Models\Usuario as Usuario;
+use \App\Models\Hortaliza as Hortaliza;
 
-class UsuarioController implements IApiUsable
+class HortalizaController implements IApiUsable
 {
 
   public function CargarUno($request, $response, $args)
   {
     $parametros = $request->getParsedBody();
 
-    // Creamos el usuario
-    $usr = new Usuario();
-    $usr->nombre = $parametros['nombre'];
-    $usr->mail = $parametros['mail'];
-    $usr->sexo = $parametros['sexo'];
-    $usr->clave = $parametros['clave'];
-    $usr->tipo = $parametros['tipo'];
-    $usr->save();
+    $nombre = $parametros['nombre'];
+    
+    
+    $archivos = $request->getUploadedFiles();
+    $destino = "./FotosHortalizas/";
+    $nombreAnterior = $archivos['foto']->getClientFilename();
+    $extension = explode(".", $nombreAnterior);
+    $extension = array_reverse($extension);
+    $pathFoto = $destino . $nombre . "." . $extension[0];
+    $archivos['foto']->moveTo($pathFoto);
 
-    $payload = json_encode(array("mensaje" => "Usuario creado con éxito"));
+
+    $hortaliza = new Hortaliza();
+    $hortaliza->precio = $parametros['precio'];
+    $hortaliza->nombre = $nombre;
+    $hortaliza->tipo = $parametros['tipo'];
+    $hortaliza->foto = $pathFoto;
+    $hortaliza->save();
+
+
+    $payload = json_encode(array("mensaje" => "Hortaliza creada con exito"));
 
     $response->getBody()->write($payload);
 

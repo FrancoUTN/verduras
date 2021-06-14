@@ -12,7 +12,9 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 require __DIR__ . '/../vendor/autoload.php';
 
 require_once './controllers/UsuarioController.php';
+
 require_once './middlewares/Verificadora.php';
+require_once './controllers/HortalizaController.php';
 
 // Load ENV
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
@@ -62,6 +64,10 @@ $app->get('[/]', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->group('/login', function (RouteCollectorProxy $group) {
+    $group->post('[/]', \Verificadora::class . ':Verificar');
+});
+
 $app->group('/usuarios', function (RouteCollectorProxy $group) {
     $group->get('[/]', \UsuarioController::class . ':TraerTodos');
     $group->get('/{usuario}', \UsuarioController::class . ':TraerUno');
@@ -70,8 +76,12 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
     $group->delete('/{id}', \UsuarioController::class . ':BorrarUno');
 });
 
-$app->group('/login', function (RouteCollectorProxy $group) {
-    $group->post('[/]', \Verificadora::class . ':Verificar');
+$app->group('/hortalizas', function (RouteCollectorProxy $group) {
+    $group->get('[/]', \HortalizaController::class . ':TraerTodos');
+    $group->get('/{hortaliza}', \HortalizaController::class . ':TraerUno');
+    $group->post('[/]', \HortalizaController::class . ':CargarUno');
+    $group->put('/{id}', \HortalizaController::class . ':ModificarUno');
+    $group->delete('/{id}', \HortalizaController::class . ':BorrarUno');
 });
 
 
