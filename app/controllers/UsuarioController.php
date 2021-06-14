@@ -49,6 +49,7 @@ class UsuarioController implements IApiUsable
   {
     $lista = Usuario::all();
     $payload = json_encode(array("listaUsuario" => $lista));
+    // $payload = json_encode($lista);
 
     $response->getBody()->write($payload);
     return $response

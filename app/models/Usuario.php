@@ -10,13 +10,13 @@ class Usuario extends Model
     use SoftDeletes;
 
     protected $primaryKey = 'id';
-    protected $table = 'usuarios';
+    protected $table = 'usuario';
     public $incrementing = true;
     public $timestamps = false;
 
-    const DELETED_AT = 'fechaBaja';
+    const DELETED_AT = 'fechaBaj';
 
     protected $fillable = [
-        'usuario', 'clave', 'fechaBaja'
+        'nombre', 'mail', 'sexo', 'clave', 'tipo', 'fechaBaj'
     ];
 }
