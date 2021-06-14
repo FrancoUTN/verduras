@@ -78,7 +78,7 @@ $app->group('/usuarios', function (RouteCollectorProxy $group) {
 
 $app->group('/hortalizas', function (RouteCollectorProxy $group) {
     $group->get('[/]', \HortalizaController::class . ':TraerTodos');
-    $group->get('/{hortaliza}', \HortalizaController::class . ':TraerUno');
+    $group->get('/{id}', \HortalizaController::class . ':TraerUno');
 
     $group->get('/tipo/{tipo}', \HortalizaController::class . ':TraerTipo');
 

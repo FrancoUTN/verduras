@@ -41,19 +41,19 @@ class HortalizaController implements IApiUsable
   public function TraerUno($request, $response, $args)
   {
     // Buscamos usuario por nombre
-    $usr = $args['usuario'];
+    $id = $args['id'];
 
     // Buscamos por primary key
-    // $usuario = Usuario::find($usr);
+    $hortaliza = Hortaliza::find($id);
 
     // Buscamos por attr usuario
-    $usuario = Usuario::where('usuario', $usr)->first();
+    // $usuario = Usuario::where('usuario', $usr)->first();
 
-    $payload = json_encode($usuario);
+    $payload = json_encode($hortaliza);
 
     $response->getBody()->write($payload);
-    return $response
-      ->withHeader('Content-Type', 'application/json');
+
+    return $response->withHeader('Content-Type', 'application/json');
   }
 
   public function TraerTodos($request, $response, $args)
